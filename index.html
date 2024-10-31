@@ -31,10 +31,12 @@
 	// Add GeoJSON data to the map when it loads
 	$.getJSON("data/healthsites_wa.geojson",function(data){
 		// Set health sites to the dataset and add the healthsites GeoJSON layer to the map
-		healthsites = L.geoJson(data,{
+		healthsites = L.geoJson(data, {
 			onEachFeature: function (feature, layer) {
-				layer.bindPopup('Type: '+feature.properties.amenity+'<br>Name: '+feature.properties.name+'<br>City: '+feature.properties.city+'');
-      }, pointToLayer: function (feature, latlng) {
+				layer.bindPopup('Type: '+ feature.properties.amenity +
+                                '<br>Name: '+ feature.properties.name +
+                                '<br>City: '+ feature.properties.city +'');
+            }, pointToLayer: function (feature, latlng) {
         if (feature.properties.amenity == "Hospital"){ 
           var marker = L.marker(latlng,{icon: hospitalIconInstance});
         } else {
@@ -76,7 +78,15 @@
 
     // Add polygons 
     $.getJSON("data/overdose_count_wa_2013.geojson",function(data){
-        overdoseLayer = L.geoJson(data, {style: style}).addTo(map);
+        overdoseLayer = L.geoJson(data, {
+            style: style,
+            onEachFeature: function (feature, layer) {
+				layer.bindPopup('County: '+ feature.properties.County +
+                                '<br>Population: '+ feature.properties.Population+
+                                '<br>Fatal Overdose Count: '+ feature.properties.Count+
+                                '<br>Range: '+ feature.properties.Range+'');
+            }
+        }).addTo(map);
     });
 
     // Set function for color ramp 
