@@ -12,6 +12,8 @@
 			<h1>Overdose & Health Sites in Washington</h1>
 		</div>
 		<div id="map"></div>
+        <button onclick="showOverdose2003()">Overdose 2003-2007</button>
+        <button onclick="showOverdose2013()">Overdose 2013-2017</button>
 	</div>
 	<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -127,7 +129,7 @@
         };
     }
 
-    // Functions to show overdose layer in 2003-2007
+    // Functions to show overdose layer during 2003-2007
     function showOverdose2003() {
         if (overdoseLayer2013) {
             map.removeLayer(overdoseLayer2013);
@@ -137,7 +139,7 @@
         }
     }
 
-    // Functions to show overdose layer in 2013-2017
+    // Functions to show overdose layer during 2013-2017
     function showOverdose2013() {
         if (overdoseLayer2003) {
             map.removeLayer(overdoseLayer2003);
