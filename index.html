@@ -127,6 +127,26 @@
         };
     }
 
+    // Functions to show overdose layer in 2003-2007
+    function showOverdose2003() {
+        if (overdoseLayer2013) {
+            map.removeLayer(overdoseLayer2013);
+        }
+        if (overdoseLayer2003) {
+            map.addLayer(overdoseLayer2003);
+        }
+    }
+
+    // Functions to show overdose layer in 2013-2017
+    function showOverdose2013() {
+        if (overdoseLayer2003) {
+            map.removeLayer(overdoseLayer2003);
+        }
+        if (overdoseLayer2013) {
+            map.addLayer(overdoseLayer2013);
+        }
+    }
+
     // Create Leaflet control object for legend
     var legend = L.control({
     position: 'bottomright'
