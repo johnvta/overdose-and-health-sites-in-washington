@@ -110,21 +110,22 @@
     });
 
     // Set function for color ramp 
-    function setColor(Range){
-    return Range == 'High' ? '#2ca25f' :
-    Range == 'Medium' ? '#99d8c9' :
-    Range == 'Low' ? '#e5f5f9' :
-                    '#d4cfcd';
+    function setColor(x){
+        return x > 228 ? '#006d2c' :  // Very High
+           x > 82 ? '#2ca25f' :       // High
+           x > 20 ? '#66c2a4' :       // Medium
+           x >= 1 ? '#99d8c9' :       // Low
+                    '#a6bddb';  
     };
 
     // Set style function
     function style(feature) {
         return {
-            fillColor: setColor(feature.properties.Range),
-            fillOpacity: 0.7,
-            weight: .5,
+            fillColor: setColor(feature.properties.Count),
+            fillOpacity: 0.85,
+            weight: 1,
             opacity: 1,
-            color: '#000000',
+            color: 'white',
             dashArray: '0'
         };
     }
