@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Overdose Web Map</title>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+	<link href="styles.css" rel="stylesheet">
+</head>
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<h1>Overdose & Health Sites in Washington</h1>
+		</div>
+		<div id="map"></div>
+	</div>
+	<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+	<script>
+    // Create map object
+    var map = L.map('map',{ center: [47.7511, -120.7401], zoom: 6 });
+
+    // Add tile layer
+		L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+			attribution: 'Tiles by <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+			maxZoom: 15,
+			minZoom: 5
+		}).addTo(map);
+
+	</script>
+</body>
+</html>
