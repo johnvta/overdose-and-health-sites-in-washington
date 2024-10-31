@@ -99,15 +99,40 @@
 
     // Set style function
     function style(feature) {
-    return {
-        fillColor: setColor(feature.properties.Range),
-        fillOpacity: 0.7,
-        weight: .5,
-        opacity: 1,
-        color: '#000000',
-        dashArray: '0'
-    };
+        return {
+            fillColor: setColor(feature.properties.Range),
+            fillOpacity: 0.7,
+            weight: .5,
+            opacity: 1,
+            color: '#000000',
+            dashArray: '0'
+        };
     }
+
+    // Create leaflet control object for legend
+    var legend = L.control({
+    position: 'bottomright'
+    });
+
+    // Function that runs when legend is added to the map
+    legend.onAdd = function(map) {
+
+    // Create div element and add it with html
+    var div = L.DomUtil.create('div', 'legend');
+    div.innerHTML += '<b>All Fatal Drug Overdoses</b><br/>';
+    div.innerHTML += '<b>per County in 2013-2017</b><br/>';
+    div.innerHTML += '<i style="background: #2ca25f"></i><p>High (300-1500)</p>';
+    div.innerHTML += '<i style="background: #99d8c9"></i><p>Medium (100-200)</p>';
+    div.innerHTML += '<i style="background: #e5f5f9"></i><p>Low (1-99)</p>';
+    div.innerHTML += '<i style="background: #d4cfcd"></i><p>Uncategorized (0)</p>';
+    div.innerHTML += '<hr><img src="icons/hospital.png"><p>Hospital</p>';
+    div.innerHTML += '<img src="icons/ambulance.png"><p>EMS</p>';
+    return div;
+    };
+
+    // Add legend to the map
+    legend.addTo(map);
+
 	</script>
 </body>
 </html>
