@@ -36,17 +36,17 @@
 				layer.bindPopup('Type: '+feature.properties.amenity+'<br>Name: '+feature.properties.name+'<br>City: '+feature.properties.city+'');
       }, pointToLayer: function (feature, latlng) {
         if (feature.properties.amenity == "Hospital"){ 
-          var marker = L.marker(latlng,{icon: hospitalIcon});
+          var marker = L.marker(latlng,{icon: hospitalIconInstance});
         } else {
-          var marker = L.marker(latlng,{icon: emsIcon});
+          var marker = L.marker(latlng,{icon: emsIconInstance});
         };
       return marker;
       }
     }).addTo(map);
     });
 
-    // Create standard icon
-    var healthIcon = L.Icon.extend({ 
+    // Create standard icon for Hospital
+    var hospitalIcon = L.Icon.extend({ 
     options:{
         iconUrl: 'icons/hospital.png',
         iconSize: [24,24],
@@ -55,10 +55,22 @@
     }
     });
 
-    // Create different icons for amenity types
-    var hospitalIcon = new healthIcon({iconUrl: 'icons/hospital.png'});
-    var emsIcon = new healthIcon({iconUrl: 'icons/ambulance.png'});
-    
+    // Create Hospital icon
+    var hospitalIconInstance = new hospitalIcon();
+
+    // Create standard icon for EMS
+    var emsIcon = L.Icon.extend({ 
+    options:{
+        iconUrl: 'icons/ambulance.png',
+        iconSize: [12,12],
+        iconAnchor: [6,6],
+        popupAnchor: [0,-6]
+    }
+    });   
+
+    // Create EMS icon
+    var emsIconInstance = new emsIcon();
+
     // Null variable that will hold overdose count per county layer
     var overdoseLayer = null;
 
@@ -69,9 +81,9 @@
 
     // Set function for color ramp 
     function setColor(Range){
-    return Range == 'High' ? '#e5f5f9' :
+    return Range == 'High' ? '#2ca25f' :
     Range == 'Medium' ? '#99d8c9' :
-    Range == 'Low' ? '#2ca25f' :
+    Range == 'Low' ? '#e5f5f9' :
                     '#d4cfcd';
     };
 
