@@ -1,124 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Leaflet CSS for map styling -->
 	<title>Overdose Web Map</title>
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
 	<link href="styles.css" rel="stylesheet">
 </head>
 <body>
-	<div id="wrapper">
-		<div id="header">
-			<h1>Overdose & Health Sites in Washington</h1>
-		</div>
-		<div id="map"></div>
-        <button onclick="showOverdose2003()">Overdose 2003-2007</button>
-        <button onclick="showOverdose2013()">Overdose 2013-2017</button>
-	</div>
-	<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <!-- Leaflet and jQuery scripts -->
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+	
+    <div id="wrapper">
+		<div id="header">
+            <h1>Overdose & Health Sites in Washington</h1>
+        </div>
+		<div id="map"></div>
+        <div id="button-container">
+            <!-- Buttons to toggle overdose data layers -->
+            <button onclick="showOverdose2003()">Overdose 2003-2007</button>
+            <button onclick="showOverdose2013()">Overdose 2013-2017</button>
+        </div>
+	</div>
+
 	<script>
-    // Create map object
-    var map = L.map('map',{ center: [47.7511, -120.7401], zoom: 6 });
+        // Initialize the map centered on Washington State
+        var map = L.map('map').setView([47.5, -120.7401], 7);
 
-    // Add tile layer
-		L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
-			attribution: 'Tiles by <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-			maxZoom: 15,
-			minZoom: 5
-		}).addTo(map);
+        // Add base layer from OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 15,
+                minZoom: 5
+            }).addTo(map);
 
-	// Null variable that will hold health sites data
-	var healthsites = null;
+        // Variable to hold health sites data
+        var healthsites = null;
 
-	// Add GeoJSON data to the map when it loads
+	// Load health sites data from GeoJSON file and add to the map
 	$.getJSON("data/healthsites_wa.geojson",function(data){
-		// Set health sites to the dataset and add the healthsites GeoJSON layer to the map
 		healthsites = L.geoJson(data, {
-			onEachFeature: function (feature, layer) {
-				layer.bindPopup('Type: '+ feature.properties.amenity +
-                                '<br>Name: '+ feature.properties.name +
-                                '<br>City: '+ feature.properties.city +'');
-            }, pointToLayer: function (feature, latlng) {
-        if (feature.properties.amenity == "Hospital"){ 
-          var marker = L.marker(latlng,{icon: hospitalIconInstance});
-        } else {
-          var marker = L.marker(latlng,{icon: emsIconInstance});
-        };
-      return marker;
-      }
-    }).addTo(map);
+            // Function to bind popup information for each health site
+			onEachFeature: function(feature, layer) {
+				layer.bindPopup(
+                    'Type: ' + feature.properties.amenity +
+                    '<br>Name: ' + feature.properties.name +
+                    '<br>City: ' + feature.properties.city
+                );
+            },
+            // Function to choose marker icon based on amenity type
+            pointToLayer: function(feature, latlng) {
+                var marker;
+                if (feature.properties.amenity == "Hospital"){ 
+                    marker = L.marker(latlng, {icon: hospitalIconInstance});
+                } else {
+                    marker = L.marker(latlng, {icon: emsIconInstance});
+                }
+                return marker;
+            }
+        }).addTo(map);
     });
 
     // Create standard icon for Hospital
     var hospitalIcon = L.Icon.extend({ 
-    options:{
-        iconUrl: 'icons/hospital.png',
-        iconSize: [24,24],
-        iconAnchor: [12,12],
-        popupAnchor: [0,-6]
-    }
+        options:{
+            iconUrl: 'icons/hospital.png',
+            iconSize: [24,24],
+            iconAnchor: [12,12],
+            popupAnchor: [0,-6]
+        }
     });
-
-    // Create Hospital icon
     var hospitalIconInstance = new hospitalIcon();
 
-    // Create standard icon for EMS
+    // Create standard icon for Emergency Medical Services (EMS)
     var emsIcon = L.Icon.extend({ 
-    options:{
-        iconUrl: 'icons/ambulance.png',
-        iconSize: [12,12],
-        iconAnchor: [6,6],
-        popupAnchor: [0,-6]
-    }
+        options:{
+            iconUrl: 'icons/ambulance.png',
+            iconSize: [12,12],
+            iconAnchor: [6,6],
+            popupAnchor: [0,-6]
+        }
     });   
-
-    // Create EMS icon
     var emsIconInstance = new emsIcon();
 
-    // Null variable that will hold overdose count per county layer
+    // Variables to hold fatal overdose count per county layers
     var overdoseLayer2003 = null;
-
-    // Add polygons for 2003-2007
-    $.getJSON("data/overdose_count_wa_2003.geojson",function(data){
-        overdoseLayer2003 = L.geoJson(data, {
-            style: style,
-            onEachFeature: function (feature, layer) {
-				layer.bindPopup('County: '+ feature.properties.County +
-                                '<br>Population: '+ feature.properties.Population+
-                                '<br>Fatal Overdose Count: '+ feature.properties.Count+
-                                '<br>Range: '+ feature.properties.Range+'');
-            }
-        })
-    });
-
-    // Null variable that will hold overdose count per county layer
     var overdoseLayer2013 = null;
 
-    // Add polygons for 2013-2017
-    $.getJSON("data/overdose_count_wa_2013.geojson",function(data){
-        overdoseLayer2013 = L.geoJson(data, {
+    // Load overdose data for 2003-2007
+    $.getJSON("data/overdose_count_wa_2003.geojson", function(data){
+        overdoseLayer2003 = L.geoJson(data, {
             style: style,
-            onEachFeature: function (feature, layer) {
-				layer.bindPopup('County: '+ feature.properties.County +
-                                '<br>Population: '+ feature.properties.Population+
-                                '<br>Fatal Overdose Count: '+ feature.properties.Count+
-                                '<br>Range: '+ feature.properties.Range+'');
+            // Function to bind popup information for each county's fatal overdose data
+            onEachFeature: function(feature, layer) {
+				layer.bindPopup(
+                    'County: '+ feature.properties.County +
+                    '<br>Population: '+ feature.properties.Population +
+                    '<br>Fatal Overdose Count: '+ feature.properties.Count +
+                    '<br>Range: '+ feature.properties.Range
+                );
             }
         })
     });
 
-    // Set function for color ramp 
+    // Load overdose data for 2013-2017
+    $.getJSON("data/overdose_count_wa_2013.geojson", function(data){
+        overdoseLayer2013 = L.geoJson(data, {
+            style: style,
+            // Function to bind popup information for each county's fatal overdose data
+            onEachFeature: function(feature, layer) {
+				layer.bindPopup(
+                    'County: ' + feature.properties.County +
+                    '<br>Population: ' + feature.properties.Population +
+                    '<br>Fatal Overdose Count: ' + feature.properties.Count +
+                    '<br>Range: ' + feature.properties.Range
+                );
+            }
+        })
+    });
+
+    // Function to set color classification based on overdose count
     function setColor(x){
         return x > 228 ? '#006d2c' :  // Very High
-           x > 82 ? '#2ca25f' :       // High
-           x > 20 ? '#66c2a4' :       // Medium
-           x >= 1 ? '#99d8c9' :       // Low
-                    '#a6bddb';  
-    };
+               x > 82 ? '#2ca25f' :   // High
+               x > 20 ? '#66c2a4' :   // Medium
+               x >= 1 ? '#99d8c9' :   // Low
+                        '#a6bddb';    // Uncategorized
+    }
 
-    // Set style function
+    // Function to set style for the overdose layers
     function style(feature) {
         return {
             fillColor: setColor(feature.properties.Count),
@@ -130,7 +142,7 @@
         };
     }
 
-    // Functions to show overdose layer during 2003-2007
+    // Functions to toggle overdose layers on the map
     function showOverdose2003() {
         if (overdoseLayer2013) {
             map.removeLayer(overdoseLayer2013);
@@ -140,7 +152,6 @@
         }
     }
 
-    // Functions to show overdose layer during 2013-2017
     function showOverdose2013() {
         if (overdoseLayer2003) {
             map.removeLayer(overdoseLayer2003);
@@ -150,25 +161,21 @@
         }
     }
 
-    // Create Leaflet control object for legend
-    var legend = L.control({
-    position: 'bottomright'
-    });
+    // Create Leaflet control object for the legend
+    var legend = L.control({ position: 'bottomright' });
 
-    // Function that runs when legend is added to the map
+    // Function that runs when the legend is added to the map
     legend.onAdd = function(map) {
-
-    // Create div element and add it with html
-    var div = L.DomUtil.create('div', 'legend');
-    div.innerHTML += '<b>All Fatal Drug Overdoses</b><br/>';
-    div.innerHTML += '<b>per County in 2013-2017</b><br/>';
-    div.innerHTML += '<i style="background: #2ca25f"></i><p>High (300-1500)</p>';
-    div.innerHTML += '<i style="background: #99d8c9"></i><p>Medium (100-200)</p>';
-    div.innerHTML += '<i style="background: #e5f5f9"></i><p>Low (1-99)</p>';
-    div.innerHTML += '<i style="background: #d4cfcd"></i><p>Uncategorized (0)</p>';
-    div.innerHTML += '<hr><img src="icons/hospital.png"><p>Hospital</p>';
-    div.innerHTML += '<img src="icons/ambulance.png"><p>EMS</p>';
-    return div;
+        var div = L.DomUtil.create('div', 'legend');
+        div.innerHTML += '<b>All Fatal Drug Overdoses</b><br/>';
+        div.innerHTML += '<b>per County in 2013-2017</b><br/>';
+        div.innerHTML += '<i style="background: #2ca25f"></i><p>High (300-1500)</p>';
+        div.innerHTML += '<i style="background: #99d8c9"></i><p>Medium (100-200)</p>';
+        div.innerHTML += '<i style="background: #e5f5f9"></i><p>Low (1-99)</p>';
+        div.innerHTML += '<i style="background: #d4cfcd"></i><p>Uncategorized (0)</p>';
+        div.innerHTML += '<hr><img src="icons/hospital.png"><p>Hospital</p>';
+        div.innerHTML += '<img src="icons/ambulance.png"><p>EMS</p>';
+        return div;
     };
 
     // Add legend to the map
@@ -177,29 +184,25 @@
     // Add scale bar to the map
     L.control.scale({position: 'bottomleft'}).addTo(map);
 
-    // Add the search geocoder
+    // Add the search geocoder control to the map
     var geocoder = L.Control.geocoder({
-    position: "topleft",
-    placeholder: "Enter place name",
-    errorMessage: "No place found.",
+        position: "topleft",
+        placeholder: "Enter place name",
+        errorMessage: "No place found.",
     })
-    
     .on('result', function(place) {
-    // Center the map at the found location
-    map.setView(place.latlng, 13); 
-
-    // Remove any existing markers
-    if (window.searchMarker) {
-        map.removeLayer(window.searchMarker);
-    }
-
-    // Create a new marker at the searched location
-    window.searchMarker = L.marker(place.latlng).addTo(map)
-        .bindPopup(place.query) 
-        .openPopup(); 
+        // Set map view to the searched location
+        map.setView(place.latlng, 13); 
+        // Remove previous search marker if it exists
+        if (window.searchMarker) {
+            map.removeLayer(window.searchMarker);
+        }
+        // Add a new marker for the search result
+        window.searchMarker = L.marker(place.latlng).addTo(map)
+            .bindPopup(place.query) // Bind the place name to the marker
+            .openPopup(); // Automatically open the popup
     })
     .addTo(map);
-
 	</script>
 </body>
 </html>
