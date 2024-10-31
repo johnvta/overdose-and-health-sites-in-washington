@@ -76,11 +76,11 @@
     var emsIconInstance = new emsIcon();
 
     // Null variable that will hold overdose count per county layer
-    var overdoseLayer = null;
+    var overdoseLayer2003 = null;
 
-    // Add polygons 
-    $.getJSON("data/overdose_count_wa_2013.geojson",function(data){
-        overdoseLayer = L.geoJson(data, {
+    // Add polygons for 2003-2007
+    $.getJSON("data/overdose_count_wa_2003.geojson",function(data){
+        overdoseLayer2003 = L.geoJson(data, {
             style: style,
             onEachFeature: function (feature, layer) {
 				layer.bindPopup('County: '+ feature.properties.County +
@@ -88,7 +88,23 @@
                                 '<br>Fatal Overdose Count: '+ feature.properties.Count+
                                 '<br>Range: '+ feature.properties.Range+'');
             }
-        }).addTo(map);
+        })
+    });
+
+    // Null variable that will hold overdose count per county layer
+    var overdoseLayer2013 = null;
+
+    // Add polygons for 2013-2017
+    $.getJSON("data/overdose_count_wa_2013.geojson",function(data){
+        overdoseLayer2013 = L.geoJson(data, {
+            style: style,
+            onEachFeature: function (feature, layer) {
+				layer.bindPopup('County: '+ feature.properties.County +
+                                '<br>Population: '+ feature.properties.Population+
+                                '<br>Fatal Overdose Count: '+ feature.properties.Count+
+                                '<br>Range: '+ feature.properties.Range+'');
+            }
+        })
     });
 
     // Set function for color ramp 
