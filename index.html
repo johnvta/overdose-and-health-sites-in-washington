@@ -2,7 +2,8 @@
 <html>
 <head>
 	<title>Overdose Web Map</title>
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
 	<link href="styles.css" rel="stylesheet">
 </head>
 <body>
@@ -14,6 +15,7 @@
 	</div>
 	<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 	<script>
     // Create map object
     var map = L.map('map',{ center: [47.7511, -120.7401], zoom: 6 });
@@ -109,7 +111,7 @@
         };
     }
 
-    // Create leaflet control object for legend
+    // Create Leaflet control object for legend
     var legend = L.control({
     position: 'bottomright'
     });
@@ -132,6 +134,32 @@
 
     // Add legend to the map
     legend.addTo(map);
+
+    // Add scale bar to the map
+    L.control.scale({position: 'bottomleft'}).addTo(map);
+
+    // Add the search geocoder
+    var geocoder = L.Control.geocoder({
+    position: "topleft",
+    placeholder: "Enter place name",
+    errorMessage: "No place found.",
+    })
+    
+    .on('result', function(place) {
+    // Center the map at the found location
+    map.setView(place.latlng, 13); 
+
+    // Remove any existing markers
+    if (window.searchMarker) {
+        map.removeLayer(window.searchMarker);
+    }
+
+    // Create a new marker at the searched location
+    window.searchMarker = L.marker(place.latlng).addTo(map)
+        .bindPopup(place.query) 
+        .openPopup(); 
+    })
+    .addTo(map);
 
 	</script>
 </body>
