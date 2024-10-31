@@ -13,6 +13,7 @@
 		<div id="map"></div>
 	</div>
 	<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script>
     // Create map object
     var map = L.map('map',{ center: [47.7511, -120.7401], zoom: 6 });
@@ -24,6 +25,20 @@
 			minZoom: 5
 		}).addTo(map);
 
+	// Null variable that will hold health sites data
+	var healthsites = null;
+
+	// Add GeoJSON data to the map when it loads
+	$.getJSON("data/healthsites_wa.geojson",function(data){
+		// Set health sites to the dataset and add the healthsites GeoJSON layer to the map
+		healthsites = L.geoJson(data,{
+			onEachFeature: function (feature, layer) {
+				layer.bindPopup();
+			}
+		}).addTo(map);
+	});
+
+    
 	</script>
 </body>
 </html>
