@@ -43,7 +43,7 @@
       return marker;
       }
     }).addTo(map);
-});
+    });
 
     // Create standard icon
     var healthIcon = L.Icon.extend({ 
@@ -59,6 +59,33 @@
     var hospitalIcon = new healthIcon({iconUrl: 'icons/hospital.png'});
     var emsIcon = new healthIcon({iconUrl: 'icons/ambulance.png'});
     
+    // Null variable that will hold overdose count per county layer
+    var overdoseLayer = null;
+
+    // Add polygons 
+    $.getJSON("data/overdose_count_wa_2013.geojson",function(data){
+        overdoseLayer = L.geoJson(data, {style: style}).addTo(map);
+    });
+
+    // Set function for color ramp 
+    function setColor(Range){
+    return Range == 'High' ? '#e5f5f9' :
+    Range == 'Medium' ? '#99d8c9' :
+    Range == 'Low' ? '#2ca25f' :
+                    '#d4cfcd';
+    };
+
+    // Set style function
+    function style(feature) {
+    return {
+        fillColor: setColor(feature.properties.Range),
+        fillOpacity: 0.7,
+        weight: .5,
+        opacity: 1,
+        color: '#000000',
+        dashArray: '0'
+    };
+    }
 	</script>
 </body>
 </html>
