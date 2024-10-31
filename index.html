@@ -37,11 +37,11 @@
             }).addTo(map);
 
         // Variable to hold health sites data
-        var healthsites = null;
+        var healthSites = null;
 
 	// Load health sites data from GeoJSON file and add to the map
 	$.getJSON("data/healthsites_wa.geojson",function(data){
-		healthsites = L.geoJson(data, {
+		healthSites = L.geoJson(data, {
             // Function to bind popup information for each health site
 			onEachFeature: function(feature, layer) {
 				layer.bindPopup(
@@ -167,12 +167,22 @@
     // Function that runs when the legend is added to the map
     legend.onAdd = function(map) {
         var div = L.DomUtil.create('div', 'legend');
+        // Array of legend items
+        var legendItems = [
+            { color: '#006d2c', label: 'Very High: 229+' },
+            { color: '#2ca25f', label: 'High: 83-228' },
+            { color: '#66c2a4', label: 'Medium: 21-82' },
+            { color: '#99d8c9', label: 'Low: 1-20' },
+            { color: '#ccece6', label: 'No Data: 0' }    
+        ];
+        // Add title for the legend
         div.innerHTML += '<b>All Fatal Drug Overdoses</b><br/>';
         div.innerHTML += '<b>per County in 2013-2017</b><br/>';
-        div.innerHTML += '<i style="background: #2ca25f"></i><p>High (300-1500)</p>';
-        div.innerHTML += '<i style="background: #99d8c9"></i><p>Medium (100-200)</p>';
-        div.innerHTML += '<i style="background: #e5f5f9"></i><p>Low (1-99)</p>';
-        div.innerHTML += '<i style="background: #d4cfcd"></i><p>Uncategorized (0)</p>';
+        // Loop through the legend items to create the legend
+        legendItems.forEach(function(item) {
+                div.innerHTML += `<i style="background: ${item.color}"></i><p>${item.label}</p>`;
+            });
+        // Add icons for Hospital and EMS
         div.innerHTML += '<hr><img src="icons/hospital.png"><p>Hospital</p>';
         div.innerHTML += '<img src="icons/ambulance.png"><p>EMS</p>';
         return div;
