@@ -224,11 +224,11 @@
 
         // Function to set color classification based on overdose count
         function nonFatalSetColor(x){
-            return x > 3623 ? '#2171b5' :   // Very High
-                    x > 1101 ? '#6baed6' :   // High
-                    x > 504 ? '#bdd7e7' :   // Medium
-                    x > 166 ? '#eff3ff' :   // Low
-                             '#a6bddb' ;   // Very Low
+            return x > 1994 ? '#08519c' :   // Very High
+                    x > 957 ? '#3182bd' :   // High
+                    x > 166 ? '#6baed6' :   // Medium
+                    x > 46 ? '#bdd7e7' :   // Low
+                             '#eff3ff' ;   // Very Low
         }
 
         // Function to set style for the base layers
@@ -245,8 +245,8 @@
 
         // Layer control for overdose polygons and health site points
         var baseLayers = {
-            "Overdose 2003-2007": fatalOverdoseLayer2003,
-            "Overdose 2013-2017": fatalOverdoseLayer2013, 
+            "Fatal Overdose 2003-2007": fatalOverdoseLayer2003,
+            "Fatal Overdose 2013-2017": fatalOverdoseLayer2013, 
             "Non-Fatal Overdose 2003-2007": nonFatalOverdoseLayer2003,
             "Non-Fatal Overdose 2013-2017": nonFatalOverdoseLayer2013
         };
@@ -263,13 +263,11 @@
 
         /* BEGINNING OF LEGEND SECTION */
         // Create Leaflet control object for the legend
-        var legend = L.control({ position: 'bottomright' });
-
-        // Function that runs when the legend is added to the map
-        legend.onAdd = function(map) {
+        var fatalLegend = L.control({ position: 'bottomright' });
+        fatalLegend.onAdd = function(map) {
             var div = L.DomUtil.create('div', 'legend');
             // Array of legend items
-            var legendItems = [
+            var fatalLegendItems = [
                 { color: '#006d2c', label: 'Very High: 229+' },
                 { color: '#2ca25f', label: 'High: 83-228' },
                 { color: '#66c2a4', label: 'Medium: 21-82' },
@@ -277,15 +275,50 @@
                 { color: '#ccece6', label: 'No Data: 0' }    
             ];
             // Add title for the legend
-            div.innerHTML += '<b>All Fatal Drug Overdoses</b><br/>';
-            div.innerHTML += '<b>per County in Washington</b><br/><br>';
-            // Loop through the legend items to create the legend
-            legendItems.forEach(function(item) {
-                    div.innerHTML += `<i style="background: ${item.color}"></i><p>${item.label}</p>`;
-                });
+            div.innerHTML += '<b>Fatal Drug Overdoses</b><br/>per County in Washington<br/><br>';
+            fatalLegendItems.forEach(function(item) {
+                div.innerHTML += `<i style="background: ${item.color}"></i><p>${item.label}</p>`;
+            });
             return div;
         };
-        legend.addTo(map);
+
+        // Create Leaflet control object for the legend
+        var nonFatalLegend = L.control({ position: 'bottomright' });
+        nonFatalLegend.onAdd = function(map) {
+            var div = L.DomUtil.create('div', 'legend');
+            // Array of legend items
+            var nonFatalLegendItems = [
+                { color: '#08519c', label: 'Very High: 1995+' },
+                { color: '#3182bd', label: 'High: 958-1994' },
+                { color: '#6baed6', label: 'Medium: 167-957' },
+                { color: '#bdd7e7', label: 'Low: 47-166' },
+                { color: '#eff3ff', label: 'Very Low: 1-46' }    
+            ];
+            div.innerHTML += '<b>Non-Fatal Drug Overdoses</b><br/>per County in Washington<br/><br>';
+            nonFatalLegendItems.forEach(function(item) {
+                div.innerHTML += `<i style="background: ${item.color}"></i><p>${item.label}</p>`;
+            });
+            return div;
+        };
+
+        // Listen for overlay add/remove events to switch legends
+        map.on('layeradd', function(event) {
+            if (event.layer === nonFatalOverdoseLayer2003 || event.layer === nonFatalOverdoseLayer2013) {
+                map.removeControl(fatalLegend);
+                nonFatalLegend.addTo(map);
+            } else if (event.layer === fatalOverdoseLayer2003 || event.layer === fatalOverdoseLayer2013) {
+                map.removeControl(nonFatalLegend);
+                fatalLegend.addTo(map);
+            }
+        });
+
+        map.on('overlayremove', function(event) {
+            if (event.layer === fatalOverdoseLayer2003 || event.layer === fatalOverdoseLayer2013) {
+                map.removeControl(fatalLegend);
+            } else if (event.layer === nonFatalOverdoseLayer2003 || event.layer === nonFatalOverdoseLayer2013) {
+                map.removeControl(nonFatalLegend);
+            }
+        });
 
         // Add the search geocoder control to the map
         var geocoder = L.Control.geocoder({
