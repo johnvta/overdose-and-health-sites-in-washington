@@ -129,13 +129,13 @@
 
         /* BEGINNING OF FATAL OVERDOSE SECTION */
         // Variables to hold fatal overdose count per county layers
-        var overdoseLayer2003 = L.layerGroup();
-        var overdoseLayer2013 = L.layerGroup();
+        var fatalOverdoseLayer2003 = L.layerGroup();
+        var fatalOverdoseLayer2013 = L.layerGroup();
 
-        // Load overdose data for 2003-2007
-        $.getJSON("data/overdose_count_wa_2003.geojson", function(data){
-            overdoseLayer2003 = L.geoJson(data, {
-                style: style,
+        // Load fatal overdose data for 2003-2007
+        $.getJSON("data/fatal_overdose_count_wa_2003.geojson", function(data){
+            fatalOverdoseLayer2003 = L.geoJson(data, {
+                style: fatalStyle,
                 // Function to bind popup information for each county's fatal overdose data
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(
@@ -145,13 +145,13 @@
                         '<br>Range: '+ feature.properties.Range
                     );
                 }
-            }).addTo(overdoseLayer2003);
+            }).addTo(fatalOverdoseLayer2003);
         });
 
-        // Load overdose data for 2013-2017
-        $.getJSON("data/overdose_count_wa_2013.geojson", function(data){
-            overdoseLayer2013 = L.geoJson(data, {
-                style: style,
+        // Load fatal overdose data for 2013-2017
+        $.getJSON("data/fatal_overdose_count_wa_2013.geojson", function(data){
+            fatalOverdoseLayer2013 = L.geoJson(data, {
+                style: fatalStyle,
                 // Function to bind popup information for each county's fatal overdose data
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(
@@ -161,11 +161,11 @@
                         '<br>Range: ' + feature.properties.Range
                     );
                 }
-            }).addTo(overdoseLayer2013);
+            }).addTo(fatalOverdoseLayer2013);
         });
 
-        // Function to set color classification based on overdose count
-        function setColor(x){
+        // Function to set color classification based on fatal overdose count
+        function fatalSetColor(x){
             return x > 228 ? '#006d2c' :   // Very High
                     x > 82 ? '#2ca25f' :   // High
                     x > 20 ? '#66c2a4' :   // Medium
@@ -173,10 +173,68 @@
                              '#a6bddb' ;   // Uncategorized
         }
 
-        // Function to set style for the overdose layers
-        function style(feature) {
+        // Function to set style for the fatal overdose layers
+        function fatalStyle(feature) {
             return {
-                fillColor: setColor(feature.properties.Count),
+                fillColor: fatalSetColor(feature.properties.Count),
+                fillOpacity: 0.85,
+                weight: 1,
+                opacity: 1,
+                color: 'white',
+                dashArray: '0'
+            };
+        }        
+
+        /* BEGINNING OF NON-FATAL OVERDOSE SECTION */
+        // Variables to hold non fatal overdose count per county layers
+        var nonFatalOverdoseLayer2003 = L.layerGroup();
+        var nonFatalOverdoseLayer2013 = L.layerGroup();
+
+        // Load overdose data for 2003-2007
+        $.getJSON("data/nonfatal_overdose_count_wa_2003.geojson", function(data){
+            nonFatalOverdoseLayer2003 = L.geoJson(data, {
+                style: nonFatalStyle,
+                // Function to bind popup information for each county's fatal overdose data
+                onEachFeature: function(feature, layer) {
+                    layer.bindPopup(
+                        'County: '+ feature.properties.County +
+                        '<br>Population: '+ feature.properties.Population +
+                        '<br>Fatal Overdose Count: '+ feature.properties.Count +
+                        '<br>Range: '+ feature.properties.Range
+                    );
+                }
+            }).addTo(nonFatalOverdoseLayer2003);
+        });
+
+        // Load non fatal overdose data for 2013-2017
+        $.getJSON("data/nonfatal_overdose_count_wa_2013.geojson", function(data){
+            nonFatalOverdoseLayer2013 = L.geoJson(data, {
+                style: nonFatalStyle,
+                // Function to bind popup information for each county's fatal overdose data
+                onEachFeature: function(feature, layer) {
+                    layer.bindPopup(
+                        'County: ' + feature.properties.County +
+                        '<br>Population: ' + feature.properties.Population +
+                        '<br>Fatal Overdose Count: ' + feature.properties.Count +
+                        '<br>Range: ' + feature.properties.Range
+                    );
+                }
+            }).addTo(nonFatalOverdoseLayer2013);
+        });
+
+        // Function to set color classification based on overdose count
+        function nonFatalSetColor(x){
+            return x > 3623 ? '#2171b5' :   // Very High
+                    x > 1101 ? '#6baed6' :   // High
+                    x > 504 ? '#bdd7e7' :   // Medium
+                    x > 166 ? '#eff3ff' :   // Low
+                             '#a6bddb' ;   // Very Low
+        }
+
+        // Function to set style for the base layers
+        function nonFatalStyle(feature) {
+            return {
+                fillColor: nonFatalSetColor(feature.properties.Count),
                 fillOpacity: 0.85,
                 weight: 1,
                 opacity: 1,
@@ -187,8 +245,10 @@
 
         // Layer control for overdose polygons and health site points
         var baseLayers = {
-            "Overdose 2003-2007": overdoseLayer2003,
-            "Overdose 2013-2017": overdoseLayer2013
+            "Overdose 2003-2007": fatalOverdoseLayer2003,
+            "Overdose 2013-2017": fatalOverdoseLayer2013, 
+            "Non-Fatal Overdose 2003-2007": nonFatalOverdoseLayer2003,
+            "Non-Fatal Overdose 2013-2017": nonFatalOverdoseLayer2013
         };
 
         var overlayLayers = {
