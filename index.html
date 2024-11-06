@@ -32,16 +32,20 @@
             }).addTo(map);
         
         /* BEGINNING OF HEALTH SITES SECTION */ 
+        
         // Variables to hold health sites data
         var hospitalLayer = L.layerGroup();
         var emsLayer = L.layerGroup();
         var otpLayer = L.layerGroup();
         var nonOpioidLayer = L.layerGroup();        
 
-        // Load health sites data from GeoJSON file and add to the map
+        // Load health sites data from GeoJSON file and display as a GeoJSON point layer
+        // For each health site, create a marker on the map with a specific icon based on the 'amenity' type
+        // Popups show information like the health site's type, name, and city
         $.getJSON("data/health_sites_wa.geojson",function(data){
+            // Create a GeoJSON layer for the health sites data
             L.geoJson(data, {
-                // Function to bind popup information for each health site
+                // Function to bind a popup to each feature displaying health site information
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(
                         'Type: ' + feature.properties.amenity +
@@ -49,7 +53,7 @@
                         '<br>City: ' + feature.properties.city
                     );
                 },
-                // Function to choose marker icon based on amenity type
+                // Function to define how to display each feature (GeoJSON point) on the map
                 pointToLayer: function(feature, latlng) {
                     var marker;
                     if (feature.properties.amenity === "Hospital"){ 
@@ -70,73 +74,41 @@
             })
         });  
 
-        // Create standard icon for Hospital
+        // Create custom icons for different health sites
         var hospitalIcon = L.Icon.extend({ 
             options:{ iconUrl: 'icons/hospital.png', iconSize: [24,24] }
         });
         var hospitalIconInstance = new hospitalIcon();
 
-        // Create standard icon for Emergency Medical Services (EMS)
         var emsIcon = L.Icon.extend({ 
             options:{ iconUrl: 'icons/ambulance.png', iconSize: [12,12] }
         });   
         var emsIconInstance = new emsIcon();
 
-        // Create standard icon for OTP (Opioid Treatment Programs) Facility
         var otpIcon = L.Icon.extend({ 
             options:{ iconUrl: 'icons/opioid.png', iconSize: [12,12] }
         });   
         var otpIconInstance = new otpIcon();  
         
-        // Create standard icon for Non-Opioid Substance User Disorder Facility
         var nonOpioidIcon = L.Icon.extend({ 
             options:{ iconUrl: 'icons/nonopioid.png', iconSize: [12,12] }
         });   
         var nonOpioidIconInstance = new nonOpioidIcon();        
 
-        // Toggle functiions for health site layers
-        function toggleHospitals() {
-            if (map.hasLayer(hospitalLayer)) {
-                map.removeLayer(hospitalLayer);
-            } else {
-                map.addLayer(hospitalLayer);
-            }
-        }
-
-        function toggleEMS() {
-            if (map.hasLayer(emsLayer)) {
-                map.removeLayer(emsLayer);
-            } else {
-                map.addLayer(emsLayer);
-            }
-        }
-
-        function toggleOTP() {
-            if (map.hasLayer(otpLayer)) {
-                map.removeLayer(otpLayer);
-            } else {
-                map.addLayer(otpLayer);
-            }
-        }
-
-        function toggleNonOpioid() {
-            if (map.hasLayer(nonOpioidLayer)) {
-                map.removeLayer(nonOpioidLayer);
-            } else {
-                map.addLayer(nonOpioidLayer);
-            }
-        }
-
         /* BEGINNING OF FATAL OVERDOSE SECTION */
-        // Variables to hold fatal overdose count per county layers
+
+        // Variables to hold layer groups for fatal overdose count per county for different time periods
         var fatalOverdoseLayer2003 = L.layerGroup();
         var fatalOverdoseLayer2013 = L.layerGroup();
 
-        // Load fatal overdose data for 2003-2007
+        // Load fatal overdose data for 2003-2007 from a GeoJSON file and display it as a GeoJSON polygon layer
+        // For each county polygon, bind a popup showing the county's overdose information
+        // The popup includes the county name, population, overdose count, and overdose range
         $.getJSON("data/fatal_overdose_count_wa_2003.geojson", function(data){
+            // Create a GeoJSON layer for the 2003-2007 fatal overdose data
             fatalOverdoseLayer2003 = L.geoJson(data, {
                 style: fatalStyle,
-                // Function to bind popup information for each county's fatal overdose data
+                // Function to bind a popup for each county's fatal overdose data
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(
                         'County: '+ feature.properties.County +
@@ -145,14 +117,17 @@
                         '<br>Range: '+ feature.properties.Range
                     );
                 }
-            }).addTo(fatalOverdoseLayer2003);
+            }).addTo(fatalOverdoseLayer2003); 
         });
 
-        // Load fatal overdose data for 2013-2017
+        // Load fatal overdose data for 2013-2017 from a GeoJSON file and display it as a GeoJSON polygon layer
+        // For each county polygon, bind a popup showing the county's overdose information
+        // The popup includes the county name, population, overdose count, and overdose range
         $.getJSON("data/fatal_overdose_count_wa_2013.geojson", function(data){
+            // Create a GeoJSON layer for the 2013-2017 fatal overdose data
             fatalOverdoseLayer2013 = L.geoJson(data, {
                 style: fatalStyle,
-                // Function to bind popup information for each county's fatal overdose data
+                // Function to bind a popup for each county's fatal overdose data
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(
                         'County: ' + feature.properties.County +
@@ -161,10 +136,12 @@
                         '<br>Range: ' + feature.properties.Range
                     );
                 }
-            }).addTo(fatalOverdoseLayer2013);
+            }).addTo(fatalOverdoseLayer2013); 
         });
 
         // Function to set color classification based on fatal overdose count
+        // This function assigns a color to each county's polygon based on the number of fatal overdoses
+        // Higher overdose counts will have darker green shades, while lower counts will have lighter green shades
         function fatalSetColor(x){
             return x > 228 ? '#006d2c' :   // Very High
                     x > 82 ? '#2ca25f' :   // High
@@ -186,43 +163,52 @@
         }        
 
         /* BEGINNING OF NON-FATAL OVERDOSE SECTION */
-        // Variables to hold non fatal overdose count per county layers
+
+        // Variables to hold layer groups for non-fatal overdose count per county for different time periods
         var nonFatalOverdoseLayer2003 = L.layerGroup();
         var nonFatalOverdoseLayer2013 = L.layerGroup();
 
-        // Load overdose data for 2003-2007
+        // Load non-fatal overdose data for 2003-2007 from a GeoJSON file and display it as a GeoJSON polygon layer
+        // For each county polygon, bind a popup showing the county's overdose information
+        // The popup includes the county name, population, overdose count, and overdose range
         $.getJSON("data/nonfatal_overdose_count_wa_2003.geojson", function(data){
+            // Create a GeoJSON layer for the 2003-2007 non-fatal overdose data
             nonFatalOverdoseLayer2003 = L.geoJson(data, {
                 style: nonFatalStyle,
-                // Function to bind popup information for each county's fatal overdose data
+                // Function to bind a popup for each county's non-fatal overdose data
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(
                         'County: '+ feature.properties.County +
                         '<br>Population: '+ feature.properties.Population +
-                        '<br>Fatal Overdose Count: '+ feature.properties.Count +
+                        '<br>Non-Fatal Overdose Count: '+ feature.properties.Count +
                         '<br>Range: '+ feature.properties.Range
                     );
                 }
-            }).addTo(nonFatalOverdoseLayer2003);
+            }).addTo(nonFatalOverdoseLayer2003); 
         });
 
-        // Load non fatal overdose data for 2013-2017
+        // Load non-fatal overdose data for 2013-2017 from a GeoJSON file and display it as a GeoJSON polygon layer
+        // For each county polygon, bind a popup showing the county's overdose information
+        // The popup includes the county name, population, overdose count, and overdose range
         $.getJSON("data/nonfatal_overdose_count_wa_2013.geojson", function(data){
+            // Create a GeoJSON layer for the 2013-2017 non-fatal overdose data
             nonFatalOverdoseLayer2013 = L.geoJson(data, {
                 style: nonFatalStyle,
-                // Function to bind popup information for each county's fatal overdose data
+                // Function to bind a popup for each county's non-fatal overdose data
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(
                         'County: ' + feature.properties.County +
                         '<br>Population: ' + feature.properties.Population +
-                        '<br>Fatal Overdose Count: ' + feature.properties.Count +
+                        '<br>Non-Fatal Overdose Count: ' + feature.properties.Count +
                         '<br>Range: ' + feature.properties.Range
                     );
                 }
             }).addTo(nonFatalOverdoseLayer2013);
         });
 
-        // Function to set color classification based on overdose count
+        // Function to set color classification based on non-fatal overdose count
+        // This function assigns a color to each county's polygon based on the number of non-fatal overdoses
+        // Higher non-fatal overdose counts will have darker blue shades, while lower counts will have lighter blue shades
         function nonFatalSetColor(x){
             return x > 1994 ? '#08519c' :   // Very High
                     x > 957 ? '#3182bd' :   // High
@@ -231,7 +217,7 @@
                              '#eff3ff' ;   // Very Low
         }
 
-        // Function to set style for the base layers
+        // Function to set style for the non-fatal overdose layers
         function nonFatalStyle(feature) {
             return {
                 fillColor: nonFatalSetColor(feature.properties.Count),
@@ -243,7 +229,9 @@
             };
         }
 
-        // Layer control for overdose polygons and health site points
+        /* BEGINNING OF LAYER CONTROL SECTION */
+
+        // Define base layers for overdose data, categorized by time periods and severity (fatal and non-fatal overdoses)
         var baseLayers = {
             "Fatal Overdose 2003-2007": fatalOverdoseLayer2003,
             "Fatal Overdose 2013-2017": fatalOverdoseLayer2013, 
@@ -251,6 +239,7 @@
             "Non-Fatal Overdose 2013-2017": nonFatalOverdoseLayer2013
         };
 
+        // Define overlay layers for health services, represented with custom icons for each service
         var overlayLayers = {
             "<img src='icons/hospital.png' style='width: 15px; height: 15px; vertical-align: middle;'> Hospitals": hospitalLayer,
             "<img src='icons/ambulance.png' style='width: 15px; height: 15px; vertical-align: middle;'> EMS": emsLayer,
@@ -258,15 +247,16 @@
             "<img src='icons/nonopioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> Non-Opioid Treatment": nonOpioidLayer
         };
 
-        // Add layer control to map
+        // Add the layer control to the map, allowing users to toggle between base layers and overlay layers
         L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
 
         /* BEGINNING OF LEGEND SECTION */
-        // Create Leaflet control object for the legend
+
+        // Create a Leaflet control object for the fatal overdose legend
         var fatalLegend = L.control({ position: 'bottomright' });
         fatalLegend.onAdd = function(map) {
             var div = L.DomUtil.create('div', 'legend');
-            // Array of legend items
+            // Define an array of legend items for fatal overdoses, including color and label
             var fatalLegendItems = [
                 { color: '#006d2c', label: 'Very High: 229+' },
                 { color: '#2ca25f', label: 'High: 83-228' },
@@ -276,17 +266,18 @@
             ];
             // Add title for the legend
             div.innerHTML += '<b>Fatal Drug Overdoses</b><br/>per County in Washington<br/><br>';
+            // Loop through each legend item and create a colored icon and label
             fatalLegendItems.forEach(function(item) {
                 div.innerHTML += `<i style="background: ${item.color}"></i><p>${item.label}</p>`;
             });
             return div;
         };
 
-        // Create Leaflet control object for the legend
+        // Create a Leaflet control object for the non-fatal overdose legend
         var nonFatalLegend = L.control({ position: 'bottomright' });
         nonFatalLegend.onAdd = function(map) {
             var div = L.DomUtil.create('div', 'legend');
-            // Array of legend items
+            // Define an array of legend items for non-fatal overdoses, including color and label
             var nonFatalLegendItems = [
                 { color: '#08519c', label: 'Very High: 1995+' },
                 { color: '#3182bd', label: 'High: 958-1994' },
@@ -295,50 +286,57 @@
                 { color: '#eff3ff', label: 'Very Low: 1-46' }    
             ];
             div.innerHTML += '<b>Non-Fatal Drug Overdoses</b><br/>per County in Washington<br/><br>';
+            // Loop through each legend item and create a colored icon and label
             nonFatalLegendItems.forEach(function(item) {
                 div.innerHTML += `<i style="background: ${item.color}"></i><p>${item.label}</p>`;
             });
             return div;
         };
 
-        // Listen for overlay add/remove events to switch legends
+        // Listen for 'layeradd' event to display the appropriate legend when an overlay layer is added to the map
         map.on('layeradd', function(event) {
+            // If the added layer is a non-fatal overdose layer, remove the fatal overdose legend and add the non-fatal legend
             if (event.layer === nonFatalOverdoseLayer2003 || event.layer === nonFatalOverdoseLayer2013) {
                 map.removeControl(fatalLegend);
                 nonFatalLegend.addTo(map);
-            } else if (event.layer === fatalOverdoseLayer2003 || event.layer === fatalOverdoseLayer2013) {
+            } 
+            // If the added layer is a fatal overdose layer, remove the non-fatal legend and add the fatal legend
+            else if (event.layer === fatalOverdoseLayer2003 || event.layer === fatalOverdoseLayer2013) {
                 map.removeControl(nonFatalLegend);
                 fatalLegend.addTo(map);
             }
         });
 
+        // Listen for 'overlayremove' event to remove the appropriate legend when an overlay layer is removed from the map
         map.on('overlayremove', function(event) {
+            // If a fatal overdose layer is removed, remove the fatal legend
             if (event.layer === fatalOverdoseLayer2003 || event.layer === fatalOverdoseLayer2013) {
                 map.removeControl(fatalLegend);
-            } else if (event.layer === nonFatalOverdoseLayer2003 || event.layer === nonFatalOverdoseLayer2013) {
+            } 
+            // If a non-fatal overdose layer is removed, remove the non-fatal legend
+            else if (event.layer === nonFatalOverdoseLayer2003 || event.layer === nonFatalOverdoseLayer2013) {
                 map.removeControl(nonFatalLegend);
             }
         });
 
-        // Add the search geocoder control to the map
+        // Add the geocoder control to the map, allowing users to search for locations by name
         var geocoder = L.Control.geocoder({
             position: "topleft",
             placeholder: "Enter place name",
             errorMessage: "No place found.",
         })
         .on('result', function(place) {
-            // Set map view to the searched location
             map.setView(place.latlng, 13); 
             // Remove previous search marker if it exists
             if (window.searchMarker) {
                 map.removeLayer(window.searchMarker);
             }
-            // Add a new marker for the search result
-            window.searchMarker = L.marker(place.latlng).addTo(map)
+            window.searchMarker = L.marker(place.latlng).addTo(map) // Add a new marker for the search result
                 .bindPopup(place.query) // Bind the place name to the marker
                 .openPopup(); // Automatically open the popup
         })
         .addTo(map);
+
 	</script>
 </body>
 </html>
