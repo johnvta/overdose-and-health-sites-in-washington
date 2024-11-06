@@ -18,16 +18,6 @@
             <h1>Overdose & Health Sites in Washington</h1>
         </div>
 		<div id="map"></div>
-        <div id="button-container">
-            <!-- Buttons to toggle overdose data layers -->
-            <button onclick="showOverdose2003()">Overdose 2003-2007</button>
-            <button onclick="showOverdose2013()">Overdose 2013-2017</button>
-            <!-- Buttons to toggle health site layers -->
-            <button onclick="toggleHospitals()">Toggle Hospitals</button>
-            <button onclick="toggleEMS()">Toggle EMS</button>
-            <button onclick="toggleOTP()">Toggle OTP</button>
-            <button onclick="toggleNonOpioid()">Toggle Non-Opioid</button>
-        </div>
 	</div>
 
 	<script>
@@ -82,45 +72,25 @@
 
         // Create standard icon for Hospital
         var hospitalIcon = L.Icon.extend({ 
-            options:{
-                iconUrl: 'icons/hospital.png',
-                iconSize: [24,24],
-                iconAnchor: [12,12],
-                popupAnchor: [0,-6]
-            }
+            options:{ iconUrl: 'icons/hospital.png', iconSize: [24,24] }
         });
         var hospitalIconInstance = new hospitalIcon();
 
         // Create standard icon for Emergency Medical Services (EMS)
         var emsIcon = L.Icon.extend({ 
-            options:{
-                iconUrl: 'icons/ambulance.png',
-                iconSize: [12,12],
-                iconAnchor: [6,6],
-                popupAnchor: [0,-6]
-            }
+            options:{ iconUrl: 'icons/ambulance.png', iconSize: [12,12] }
         });   
         var emsIconInstance = new emsIcon();
 
         // Create standard icon for OTP (Opioid Treatment Programs) Facility
         var otpIcon = L.Icon.extend({ 
-            options:{
-                iconUrl: 'icons/opioid.png',
-                iconSize: [12,12],
-                iconAnchor: [6,6],
-                popupAnchor: [0,-6]
-            }
+            options:{ iconUrl: 'icons/opioid.png', iconSize: [12,12] }
         });   
         var otpIconInstance = new otpIcon();  
         
         // Create standard icon for Non-Opioid Substance User Disorder Facility
         var nonOpioidIcon = L.Icon.extend({ 
-            options:{
-                iconUrl: 'icons/nonopioid.png',
-                iconSize: [12,12],
-                iconAnchor: [6,6],
-                popupAnchor: [0,-6]
-            }
+            options:{ iconUrl: 'icons/nonopioid.png', iconSize: [12,12] }
         });   
         var nonOpioidIconInstance = new nonOpioidIcon();        
 
@@ -159,8 +129,8 @@
 
         /* BEGINNING OF FATAL OVERDOSE SECTION */
         // Variables to hold fatal overdose count per county layers
-        var overdoseLayer2003 = null;
-        var overdoseLayer2013 = null;
+        var overdoseLayer2003 = L.layerGroup();
+        var overdoseLayer2013 = L.layerGroup();
 
         // Load overdose data for 2003-2007
         $.getJSON("data/overdose_count_wa_2003.geojson", function(data){
@@ -175,7 +145,7 @@
                         '<br>Range: '+ feature.properties.Range
                     );
                 }
-            })
+            }).addTo(overdoseLayer2003);
         });
 
         // Load overdose data for 2013-2017
@@ -191,7 +161,7 @@
                         '<br>Range: ' + feature.properties.Range
                     );
                 }
-            })
+            }).addTo(overdoseLayer2013);
         });
 
         // Function to set color classification based on overdose count
@@ -215,24 +185,21 @@
             };
         }
 
-        // Functions to toggle overdose layers on the map
-        function showOverdose2003() {
-            if (overdoseLayer2013) {
-                map.removeLayer(overdoseLayer2013);
-            }
-            if (overdoseLayer2003) {
-                map.addLayer(overdoseLayer2003);
-            }
-        }
+        // Layer control for overdose polygons and health site points
+        var baseLayers = {
+            "Overdose 2003-2007": overdoseLayer2003,
+            "Overdose 2013-2017": overdoseLayer2013
+        };
 
-        function showOverdose2013() {
-            if (overdoseLayer2003) {
-                map.removeLayer(overdoseLayer2003);
-            }
-            if (overdoseLayer2013) {
-                map.addLayer(overdoseLayer2013);
-            }
-        }
+        var overlayLayers = {
+            "<img src='icons/hospital.png' style='width: 15px; height: 15px; vertical-align: middle;'> Hospitals": hospitalLayer,
+            "<img src='icons/ambulance.png' style='width: 15px; height: 15px; vertical-align: middle;'> EMS": emsLayer,
+            "<img src='icons/opioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> OTP Facilities": otpLayer,
+            "<img src='icons/nonopioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> Non-Opioid Treatment": nonOpioidLayer
+        };
+
+        // Add layer control to map
+        L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
 
         /* BEGINNING OF LEGEND SECTION */
         // Create Leaflet control object for the legend
@@ -256,15 +223,9 @@
             legendItems.forEach(function(item) {
                     div.innerHTML += `<i style="background: ${item.color}"></i><p>${item.label}</p>`;
                 });
-            // Add icons for Hospital and EMS
-            div.innerHTML += '<hr><br><img src="icons/hospital.png"><p>Hospital</p>';
-            div.innerHTML += '<img src="icons/ambulance.png"><p>EMS</p>';
             return div;
         };
-
-
-        // Add Layer Control to map
-        L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
+        legend.addTo(map);
 
         // Add the search geocoder control to the map
         var geocoder = L.Control.geocoder({
