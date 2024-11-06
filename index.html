@@ -22,9 +22,11 @@
             <!-- Buttons to toggle overdose data layers -->
             <button onclick="showOverdose2003()">Overdose 2003-2007</button>
             <button onclick="showOverdose2013()">Overdose 2013-2017</button>
-            <!-- Buttons to toggle Hospital and EMS layers -->
+            <!-- Buttons to toggle health site layers -->
             <button onclick="toggleHospitals()">Toggle Hospitals</button>
             <button onclick="toggleEMS()">Toggle EMS</button>
+            <button onclick="toggleOTP()">Toggle OTP</button>
+            <button onclick="toggleNonOpioid()">Toggle Non-Opioid</button>
         </div>
 	</div>
 
@@ -43,9 +45,11 @@
         // Variables to hold health sites data
         var hospitalLayer = L.layerGroup();
         var emsLayer = L.layerGroup();
+        var otpLayer = L.layerGroup();
+        var nonOpioidLayer = L.layerGroup();        
 
         // Load health sites data from GeoJSON file and add to the map
-        $.getJSON("data/healthsites_wa.geojson",function(data){
+        $.getJSON("data/health_sites_wa.geojson",function(data){
             L.geoJson(data, {
                 // Function to bind popup information for each health site
                 onEachFeature: function(feature, layer) {
@@ -58,17 +62,23 @@
                 // Function to choose marker icon based on amenity type
                 pointToLayer: function(feature, latlng) {
                     var marker;
-                    if (feature.properties.amenity == "Hospital"){ 
+                    if (feature.properties.amenity === "Hospital"){ 
                         marker = L.marker(latlng, {icon: hospitalIconInstance});
                         hospitalLayer.addLayer(marker);
-                    } else {
+                    } else if (feature.properties.amenity === "EMS (Emergency Medical Services)") {
                         marker = L.marker(latlng, {icon: emsIconInstance});
                         emsLayer.addLayer(marker);
+                    } else if (feature.properties.amenity === "OTP (Opioid Treatment Programs) Facility") {
+                        marker = L.marker(latlng, {icon: otpIconInstance});
+                        otpLayer.addLayer(marker);
+                    } else {
+                        marker = L.marker(latlng, {icon: nonOpioidIconInstance});
+                        nonOpioidLayer.addLayer(marker);
                     }
                     return marker;
                 }
             })
-        });
+        });  
 
         // Create standard icon for Hospital
         var hospitalIcon = L.Icon.extend({ 
@@ -92,7 +102,29 @@
         });   
         var emsIconInstance = new emsIcon();
 
-        // Toggle functiions for Hospital and EMS layers
+        // Create standard icon for OTP (Opioid Treatment Programs) Facility
+        var otpIcon = L.Icon.extend({ 
+            options:{
+                iconUrl: 'icons/opioid.png',
+                iconSize: [12,12],
+                iconAnchor: [6,6],
+                popupAnchor: [0,-6]
+            }
+        });   
+        var otpIconInstance = new otpIcon();  
+        
+        // Create standard icon for Non-Opioid Substance User Disorder Facility
+        var nonOpioidIcon = L.Icon.extend({ 
+            options:{
+                iconUrl: 'icons/nonopioid.png',
+                iconSize: [12,12],
+                iconAnchor: [6,6],
+                popupAnchor: [0,-6]
+            }
+        });   
+        var nonOpioidIconInstance = new nonOpioidIcon();        
+
+        // Toggle functiions for health site layers
         function toggleHospitals() {
             if (map.hasLayer(hospitalLayer)) {
                 map.removeLayer(hospitalLayer);
@@ -106,6 +138,22 @@
                 map.removeLayer(emsLayer);
             } else {
                 map.addLayer(emsLayer);
+            }
+        }
+
+        function toggleOTP() {
+            if (map.hasLayer(otpLayer)) {
+                map.removeLayer(otpLayer);
+            } else {
+                map.addLayer(otpLayer);
+            }
+        }
+
+        function toggleNonOpioid() {
+            if (map.hasLayer(nonOpioidLayer)) {
+                map.removeLayer(nonOpioidLayer);
+            } else {
+                map.addLayer(nonOpioidLayer);
             }
         }
 
@@ -214,11 +262,9 @@
             return div;
         };
 
-        // Add legend to the map
-        legend.addTo(map);
 
-        // Add scale bar to the map
-        L.control.scale({position: 'bottomleft'}).addTo(map);
+        // Add Layer Control to map
+        L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
 
         // Add the search geocoder control to the map
         var geocoder = L.Control.geocoder({
