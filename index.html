@@ -144,10 +144,10 @@
         // Higher overdose counts will have darker green shades, while lower counts will have lighter green shades
         function fatalSetColor(x){
             return x > 228 ? '#006d2c' :   // Very High
-                    x > 82 ? '#2ca25f' :   // High
-                    x > 20 ? '#66c2a4' :   // Medium
-                    x >= 1 ? '#99d8c9' :   // Low
-                             '#a6bddb' ;   // Uncategorized
+                    x > 91 ? '#2ca25f' :   // High
+                    x > 32 ? '#66c2a4' :   // Medium
+                    x >= 9 ? '#99d8c9' :   // Low
+                             '#eff3ff' ;   // Very Low
         }
 
         // Function to set style for the fatal overdose layers
@@ -259,10 +259,10 @@
             // Define an array of legend items for fatal overdoses, including color and label
             var fatalLegendItems = [
                 { color: '#006d2c', label: 'Very High: 229+' },
-                { color: '#2ca25f', label: 'High: 83-228' },
-                { color: '#66c2a4', label: 'Medium: 21-82' },
-                { color: '#99d8c9', label: 'Low: 1-20' },
-                { color: '#ccece6', label: 'No Data: 0' }    
+                { color: '#2ca25f', label: 'High: 92-228' },
+                { color: '#66c2a4', label: 'Medium: 33-91' },
+                { color: '#99d8c9', label: 'Low: 10-32' },
+                { color: '#eff3ff', label: 'Very Low: 1-9' }    
             ];
             // Add title for the legend
             div.innerHTML += '<b>Fatal Drug Overdoses</b><br/>per County in Washington<br/><br>';
