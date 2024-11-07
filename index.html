@@ -101,21 +101,40 @@
         var fatalOverdoseLayer2003 = L.layerGroup();
         var fatalOverdoseLayer2013 = L.layerGroup();
 
+        // Function to generate the popup table content
+        function popupTable(feature) {
+            return `
+                <table class="popup-table">
+                    <tr>
+                        <td><strong>County</strong></td>
+                        <td>${feature.properties.county}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Population</strong></td>
+                        <td>${feature.properties.population}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Overdose Count</strong></td>
+                        <td>${feature.properties.count}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Per Capita Rate</strong></td>
+                        <td>${feature.properties.capita}</td>
+                    </tr>
+                </table>
+            `;
+        }
+
         // Load fatal overdose data for 2003-2007 from a GeoJSON file and display it as a GeoJSON polygon layer
         // For each county polygon, bind a popup showing the county's overdose information
         // The popup includes the county name, population, overdose count, and overdose range
-        $.getJSON("data/fatal_overdose_count_wa_2003.geojson", function(data){
+        $.getJSON("data/fatal_overdose_wa_2003.geojson", function(data){
             // Create a GeoJSON layer for the 2003-2007 fatal overdose data
             fatalOverdoseLayer2003 = L.geoJson(data, {
                 style: fatalStyle,
                 // Function to bind a popup for each county's fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(
-                        'County: '+ feature.properties.County +
-                        '<br>Population: '+ feature.properties.Population +
-                        '<br>Fatal Overdose Count: '+ feature.properties.Count +
-                        '<br>Range: '+ feature.properties.Range
-                    );
+                    layer.bindPopup(popupTable(feature));
                 }
             }).addTo(fatalOverdoseLayer2003); 
         });
@@ -123,18 +142,13 @@
         // Load fatal overdose data for 2013-2017 from a GeoJSON file and display it as a GeoJSON polygon layer
         // For each county polygon, bind a popup showing the county's overdose information
         // The popup includes the county name, population, overdose count, and overdose range
-        $.getJSON("data/fatal_overdose_count_wa_2013.geojson", function(data){
+        $.getJSON("data/fatal_overdose_wa_2013.geojson", function(data){
             // Create a GeoJSON layer for the 2013-2017 fatal overdose data
             fatalOverdoseLayer2013 = L.geoJson(data, {
                 style: fatalStyle,
                 // Function to bind a popup for each county's fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(
-                        'County: ' + feature.properties.County +
-                        '<br>Population: ' + feature.properties.Population +
-                        '<br>Fatal Overdose Count: ' + feature.properties.Count +
-                        '<br>Range: ' + feature.properties.Range
-                    );
+                    layer.bindPopup(popupTable(feature));
                 }
             }).addTo(fatalOverdoseLayer2013); 
         });
@@ -153,7 +167,7 @@
         // Function to set style for the fatal overdose layers
         function fatalStyle(feature) {
             return {
-                fillColor: fatalSetColor(feature.properties.Count),
+                fillColor: fatalSetColor(feature.properties.count),
                 fillOpacity: 0.85,
                 weight: 1,
                 opacity: 1,
@@ -171,18 +185,13 @@
         // Load non-fatal overdose data for 2003-2007 from a GeoJSON file and display it as a GeoJSON polygon layer
         // For each county polygon, bind a popup showing the county's overdose information
         // The popup includes the county name, population, overdose count, and overdose range
-        $.getJSON("data/nonfatal_overdose_count_wa_2003.geojson", function(data){
+        $.getJSON("data/non_fatal_overdose_wa_2003.geojson", function(data){
             // Create a GeoJSON layer for the 2003-2007 non-fatal overdose data
             nonFatalOverdoseLayer2003 = L.geoJson(data, {
                 style: nonFatalStyle,
                 // Function to bind a popup for each county's non-fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(
-                        'County: '+ feature.properties.County +
-                        '<br>Population: '+ feature.properties.Population +
-                        '<br>Non-Fatal Overdose Count: '+ feature.properties.Count +
-                        '<br>Range: '+ feature.properties.Range
-                    );
+                    layer.bindPopup(popupTable(feature));
                 }
             }).addTo(nonFatalOverdoseLayer2003); 
         });
@@ -190,18 +199,13 @@
         // Load non-fatal overdose data for 2013-2017 from a GeoJSON file and display it as a GeoJSON polygon layer
         // For each county polygon, bind a popup showing the county's overdose information
         // The popup includes the county name, population, overdose count, and overdose range
-        $.getJSON("data/nonfatal_overdose_count_wa_2013.geojson", function(data){
+        $.getJSON("data/non_fatal_overdose_wa_2013.geojson", function(data){
             // Create a GeoJSON layer for the 2013-2017 non-fatal overdose data
             nonFatalOverdoseLayer2013 = L.geoJson(data, {
                 style: nonFatalStyle,
                 // Function to bind a popup for each county's non-fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(
-                        'County: ' + feature.properties.County +
-                        '<br>Population: ' + feature.properties.Population +
-                        '<br>Non-Fatal Overdose Count: ' + feature.properties.Count +
-                        '<br>Range: ' + feature.properties.Range
-                    );
+                    layer.bindPopup(popupTable(feature));
                 }
             }).addTo(nonFatalOverdoseLayer2013);
         });
@@ -220,7 +224,7 @@
         // Function to set style for the non-fatal overdose layers
         function nonFatalStyle(feature) {
             return {
-                fillColor: nonFatalSetColor(feature.properties.Count),
+                fillColor: nonFatalSetColor(feature.properties.count),
                 fillOpacity: 0.85,
                 weight: 1,
                 opacity: 1,
