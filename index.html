@@ -38,7 +38,31 @@
         var emsLayer = L.layerGroup();
         var otpLayer = L.layerGroup();
         var nonOpioidLayer = L.layerGroup();        
-        var harmReductionLayer = L.layerGroup();        
+        var harmReductionLayer = L.layerGroup();
+        
+        // Function to generate the popup table content for health sites
+        function healthPopupTable(feature) {
+            return `
+                <table class="health-popup-table">
+                    <tr>
+                        <td><strong>Type</strong></td>
+                        <td>${feature.properties.amenity}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Name</strong></td>
+                        <td>${feature.properties.name}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>City</strong></td>
+                        <td>${feature.properties.city}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Address</strong></td>
+                        <td>${feature.properties.address}</td>
+                    </tr>
+                </table>
+            `;
+        }        
 
         // Load health sites data from GeoJSON file and display as a GeoJSON point layer
         // For each health site, create a marker on the map with a specific icon based on the 'amenity' type
@@ -48,12 +72,7 @@
             L.geoJson(data, {
                 // Function to bind a popup to each feature displaying health site information
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(
-                        'Type: ' + feature.properties.amenity +
-                        '<br>Name: ' + feature.properties.name +
-                        '<br>City: ' + feature.properties.city +
-                        '<br>Address: ' + feature.properties.address 
-                    );
+                    layer.bindPopup(healthPopupTable(feature));
                 },
                 // Function to define how to display each feature (GeoJSON point) on the map
                 pointToLayer: function(feature, latlng) {
@@ -86,22 +105,22 @@
         var hospitalIconInstance = new hospitalIcon();
 
         var emsIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/ambulance.png', iconSize: [12,12] }
+            options:{ iconUrl: 'icons/ambulance.png', iconSize: [24,24] }
         });   
         var emsIconInstance = new emsIcon();
 
         var otpIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/opioid.png', iconSize: [12,12] }
+            options:{ iconUrl: 'icons/opioid.png', iconSize: [24,24] }
         });   
         var otpIconInstance = new otpIcon();  
         
         var nonOpioidIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/nonopioid.png', iconSize: [12,12] }
+            options:{ iconUrl: 'icons/nonopioid.png', iconSize: [24,24] }
         });   
         var nonOpioidIconInstance = new nonOpioidIcon();
         
         var harmReductionIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/harmreduction.png', iconSize: [12,12] }
+            options:{ iconUrl: 'icons/harmreduction.png', iconSize: [24,24] }
         });   
         var harmReductionIconInstance = new harmReductionIcon(); 
 
@@ -111,10 +130,10 @@
         var fatalOverdoseLayer2003 = L.layerGroup();
         var fatalOverdoseLayer2013 = L.layerGroup();
 
-        // Function to generate the popup table content
-        function popupTable(feature) {
+        // Function to generate the popup table content for overdoses
+        function overdosePopupTable(feature) {
             return `
-                <table class="popup-table">
+                <table class="overdose-popup-table">
                     <tr>
                         <td><strong>County</strong></td>
                         <td>${feature.properties.county}</td>
@@ -144,7 +163,7 @@
                 style: fatalStyle,
                 // Function to bind a popup for each county's fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(popupTable(feature));
+                    layer.bindPopup(overdosePopupTable(feature));
                 }
             }).addTo(fatalOverdoseLayer2003); 
         });
@@ -158,7 +177,7 @@
                 style: fatalStyle,
                 // Function to bind a popup for each county's fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(popupTable(feature));
+                    layer.bindPopup(overdosePopupTable(feature));
                 }
             }).addTo(fatalOverdoseLayer2013); 
         });
@@ -201,7 +220,7 @@
                 style: nonFatalStyle,
                 // Function to bind a popup for each county's non-fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(popupTable(feature));
+                    layer.bindPopup(overdosePopupTable(feature));
                 }
             }).addTo(nonFatalOverdoseLayer2003); 
         });
@@ -215,7 +234,7 @@
                 style: nonFatalStyle,
                 // Function to bind a popup for each county's non-fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(popupTable(feature));
+                    layer.bindPopup(overdosePopupTable(feature));
                 }
             }).addTo(nonFatalOverdoseLayer2013);
         });
@@ -243,23 +262,23 @@
             };
         }
 
-        /* BEGINNING OF LAYER CONTROL SECTION */
+        /* BEGINNING OF LAYERS CONTROL SECTION */
 
         // Define base layers for overdose data, categorized by time periods and severity (fatal and non-fatal overdoses)
         const baseLayers = {
-            "Fatal Overdose 2003-2007": fatalOverdoseLayer2003,
-            "Fatal Overdose 2013-2017": fatalOverdoseLayer2013, 
-            "Non-Fatal Overdose 2003-2007": nonFatalOverdoseLayer2003,
-            "Non-Fatal Overdose 2013-2017": nonFatalOverdoseLayer2013
+            "Fatal Overdoses (2003-2007)": fatalOverdoseLayer2003,
+            "Fatal Overdoses (2013-2017)": fatalOverdoseLayer2013, 
+            "Non-Fatal Overdoses (2003-2007)": nonFatalOverdoseLayer2003,
+            "Non-Fatal Overdoses (2013-2017)": nonFatalOverdoseLayer2013
         };
 
         // Define overlay layers for health services, represented with custom icons for each service
         const overlayLayers = {
             "<img src='icons/hospital.png' style='width: 15px; height: 15px; vertical-align: middle;'> Hospitals": hospitalLayer,
-            "<img src='icons/ambulance.png' style='width: 15px; height: 15px; vertical-align: middle;'> EMS": emsLayer,
-            "<img src='icons/opioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> OTP Facilities": otpLayer,
-            "<img src='icons/nonopioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> Non-Opioid Treatment": nonOpioidLayer,
-            "<img src='icons/harmreduction.png' style='width: 15px; height: 15px; vertical-align: middle;'> Harm Reduction Sources": harmReductionLayer
+            "<img src='icons/ambulance.png' style='width: 15px; height: 15px; vertical-align: middle;'> Emergency Medical Services": emsLayer,
+            "<img src='icons/opioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> Opioid Treatment Programs": otpLayer,
+            "<img src='icons/nonopioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> Non-Opioid Rehab Facility": nonOpioidLayer,
+            "<img src='icons/harmreduction.png' style='width: 15px; height: 15px; vertical-align: middle;'> Harm Reduction Services": harmReductionLayer
         };
 
         // Create the control layer to the map, allowing users to toggle between base layers and overlay layers
