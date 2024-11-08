@@ -38,6 +38,7 @@
         var emsLayer = L.layerGroup();
         var otpLayer = L.layerGroup();
         var nonOpioidLayer = L.layerGroup();        
+        var harmReductionLayer = L.layerGroup();        
 
         // Load health sites data from GeoJSON file and display as a GeoJSON point layer
         // For each health site, create a marker on the map with a specific icon based on the 'amenity' type
@@ -50,7 +51,8 @@
                     layer.bindPopup(
                         'Type: ' + feature.properties.amenity +
                         '<br>Name: ' + feature.properties.name +
-                        '<br>City: ' + feature.properties.city
+                        '<br>City: ' + feature.properties.city +
+                        '<br>Address: ' + feature.properties.address 
                     );
                 },
                 // Function to define how to display each feature (GeoJSON point) on the map
@@ -65,14 +67,17 @@
                     } else if (feature.properties.amenity === "OTP (Opioid Treatment Programs) Facility") {
                         marker = L.marker(latlng, {icon: otpIconInstance});
                         otpLayer.addLayer(marker);
-                    } else {
+                    } else if (feature.properties.amenity === "Non-Opioid User Disorder Facility") {
                         marker = L.marker(latlng, {icon: nonOpioidIconInstance});
                         nonOpioidLayer.addLayer(marker);
+                    } else {
+                        marker = L.marker(latlng, {icon: harmReductionIconInstance});
+                        harmReductionLayer.addLayer(marker);
                     }
                     return marker;
                 }
             })
-        });  
+        });               
 
         // Create custom icons for different health sites
         var hospitalIcon = L.Icon.extend({ 
@@ -93,7 +98,12 @@
         var nonOpioidIcon = L.Icon.extend({ 
             options:{ iconUrl: 'icons/nonopioid.png', iconSize: [12,12] }
         });   
-        var nonOpioidIconInstance = new nonOpioidIcon();        
+        var nonOpioidIconInstance = new nonOpioidIcon();
+        
+        var harmReductionIcon = L.Icon.extend({ 
+            options:{ iconUrl: 'icons/harmreduction.png', iconSize: [12,12] }
+        });   
+        var harmReductionIconInstance = new harmReductionIcon(); 
 
         /* BEGINNING OF FATAL OVERDOSE SECTION */
 
@@ -168,7 +178,7 @@
         function fatalStyle(feature) {
             return {
                 fillColor: fatalSetColor(feature.properties.count),
-                fillOpacity: 0.85,
+                fillOpacity: 0.8,
                 weight: 1,
                 opacity: 1,
                 color: 'white',
@@ -225,7 +235,7 @@
         function nonFatalStyle(feature) {
             return {
                 fillColor: nonFatalSetColor(feature.properties.count),
-                fillOpacity: 0.85,
+                fillOpacity: 0.8,
                 weight: 1,
                 opacity: 1,
                 color: 'white',
@@ -236,7 +246,7 @@
         /* BEGINNING OF LAYER CONTROL SECTION */
 
         // Define base layers for overdose data, categorized by time periods and severity (fatal and non-fatal overdoses)
-        var baseLayers = {
+        const baseLayers = {
             "Fatal Overdose 2003-2007": fatalOverdoseLayer2003,
             "Fatal Overdose 2013-2017": fatalOverdoseLayer2013, 
             "Non-Fatal Overdose 2003-2007": nonFatalOverdoseLayer2003,
@@ -244,15 +254,16 @@
         };
 
         // Define overlay layers for health services, represented with custom icons for each service
-        var overlayLayers = {
+        const overlayLayers = {
             "<img src='icons/hospital.png' style='width: 15px; height: 15px; vertical-align: middle;'> Hospitals": hospitalLayer,
             "<img src='icons/ambulance.png' style='width: 15px; height: 15px; vertical-align: middle;'> EMS": emsLayer,
             "<img src='icons/opioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> OTP Facilities": otpLayer,
-            "<img src='icons/nonopioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> Non-Opioid Treatment": nonOpioidLayer
+            "<img src='icons/nonopioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> Non-Opioid Treatment": nonOpioidLayer,
+            "<img src='icons/harmreduction.png' style='width: 15px; height: 15px; vertical-align: middle;'> Harm Reduction Sources": harmReductionLayer
         };
 
-        // Create the layer control to the map, allowing users to toggle between base layers and overlay layers
-        const controlLegend = new L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
+        // Create the control layer to the map, allowing users to toggle between base layers and overlay layers
+        const controlLegend = new L.control.layers(baseLayers, overlayLayers, { collapsed: true }).addTo(map);
 
         // Add title for base layers
         const baseTitle = document.createElement('div');
