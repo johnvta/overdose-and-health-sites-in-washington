@@ -40,17 +40,17 @@ html, body {
 	margin: 0;
 }
 
-.popup-table {
+.overdose-popup-table, .health-popup-table {
     width: 100%;
     margin: 0 auto; 
     border-collapse: collapse; 
 }
 
-.popup-table td {
+.overdose-popup-table td, .health-popup-table td {
     padding-right: 5px;
     text-align: left; 
 }
 
-.popup-table td:nth-child(2) {
+.overdose-popup-table td:nth-child(2), .health-popup-table td:nth-child(2) {
     padding-left: 10px; 
 }
