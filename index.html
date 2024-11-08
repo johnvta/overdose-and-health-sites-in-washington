@@ -3,13 +3,13 @@
 <head>
     <!-- Leaflet CSS for map styling -->
 	<title>Overdose Web Map</title>
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
-	<link href="style.css" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Leaflet and jQuery scripts -->
-    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 	
@@ -111,7 +111,7 @@
                     </tr>
                     <tr>
                         <td><strong>Population</strong></td>
-                        <td>${feature.properties.population}</td>
+                        <td>${feature.properties.population.toLocaleString()}</td>
                     </tr>
                     <tr>
                         <td><strong>Overdose Count</strong></td>
@@ -251,8 +251,20 @@
             "<img src='icons/nonopioid.png' style='width: 15px; height: 15px; vertical-align: middle;'> Non-Opioid Treatment": nonOpioidLayer
         };
 
-        // Add the layer control to the map, allowing users to toggle between base layers and overlay layers
-        L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
+        // Create the layer control to the map, allowing users to toggle between base layers and overlay layers
+        const controlLegend = new L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
+
+        // Add title for base layers
+        const baseTitle = document.createElement('div');
+        baseTitle.innerHTML = '<span style="font-size:16pt">Overdose Data</span>';
+        baseTitle.style.textAlign = 'center';
+        document.querySelector('.leaflet-control-layers-base').insertAdjacentElement('beforebegin', baseTitle);
+
+        // Add title for overlay layers
+        const overlayTitle = document.createElement('div');
+        overlayTitle.innerHTML = '<span style="font-size:16pt">Health Sites</span>';
+        overlayTitle.style.textAlign = 'center';
+        document.querySelector('.leaflet-control-layers-overlays').insertAdjacentElement('beforebegin', overlayTitle);
 
         /* BEGINNING OF LEGEND SECTION */
 
