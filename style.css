@@ -47,19 +47,46 @@ html, body {
 	margin: 0;
 }
 
-.overdose-popup-table, .health-popup-table {
-    width: 100%;
-    margin: 0 auto; 
-    border-collapse: collapse; 
+.overdose-popup-title, .health-popup-title {
+	text-align: center;
+	margin-bottom: 8px;
 }
 
-.overdose-popup-table td, .health-popup-table td {
-    padding-right: 5px;
+.health-popup-table {
+    margin: 0 auto; 
+	table-layout: fixed;
+	font-size: 14px;
+}
+
+.health-popup-table td {
+    padding: 2px;
     text-align: left; 
 }
 
-.overdose-popup-table td:nth-child(2), .health-popup-table td:nth-child(2) {
-    padding-left: 10px; 
+.health-popup-table td:nth-child(2) {
+	padding-left: 20px;
+}
+
+.overdose-popup-table {
+    margin: 0 auto; 
+	table-layout: fixed;
+	font-size: 14px;
+	width: 100%;
+}
+
+.overdose-popup-table td {
+    padding: 2px;
+    text-align: left; 
+	white-space: nowrap;
+}
+
+.overdose-popup-table td:nth-child(2) {
+	padding-left: 40px;
+}
+
+.overdose-popup-wrapper .leaflet-popup-content-wrapper {
+    padding: 1px; 
+	width: 240px;
 }
 
 .leaflet-control-layers-base, .leaflet-control-layers-overlays {
@@ -70,3 +97,20 @@ html, body {
 .control-title {
 	margin-bottom: -8px;
 }
+
+.leaflet-control-layers label {
+	font-size: 14px;
+}
+
+.leaflet-control-layers-overlays label img {
+	margin-left: 5px; 
+	margin-right: 3px;
+}
+
+.leaflet-control-layers-base label b {
+    font-weight: normal; 
+	margin-left: 5px; 
+}
+
+
+
