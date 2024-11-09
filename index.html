@@ -44,27 +44,45 @@
         
         // Function to generate the popup table content for health sites
         function healthPopupTable(feature) {
+            const lat = feature.geometry.coordinates[1].toFixed(5);
+            const lon = feature.geometry.coordinates[0].toFixed(5);
+
             return `
-                <table class="health-popup-table">
-                    <tr>
-                        <td><strong>Type</strong></td>
-                        <td>${feature.properties.amenity}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Name</strong></td>
-                        <td>${feature.properties.name}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Address</strong></td>
-                        <td>${feature.properties.address}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>City</strong></td>
-                        <td>${feature.properties.city}</td>
-                    </tr>
-                </table>
+                <div>
+                    <h2 class="health-popup-title">${feature.properties.name}</h2>
+                    <table class="health-popup-table">
+                        <tr>
+                            <td><strong>Type</strong></td>
+                            <td>${feature.properties.amenity}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Address</strong></td>
+                            <td>${feature.properties.address}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>City</strong></td>
+                            <td>${feature.properties.city}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>State</strong></td>
+                            <td>${feature.properties.state}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zipcode</strong></td>
+                            <td>${feature.properties.zipcode}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>County</strong></td>
+                            <td>${feature.properties.county}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Coordinates</strong></td>
+                            <td>${lat}, ${lon}</td>
+                        </tr>
+                    </table>
+                </div>
             `;
-        }        
+        }     
 
         // Load health sites data from GeoJSON file and display as a GeoJSON point layer
         // For each health site, create a marker on the map with a specific icon based on the 'amenity' type
@@ -75,6 +93,7 @@
                 // Function to bind a popup to each feature displaying health site information
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(healthPopupTable(feature), {
+                        className: 'health-popup-wrapper',
                         offset: L.point(0, -15)
                     });
                 },
@@ -84,13 +103,13 @@
                     if (feature.properties.amenity === "Hospital"){ 
                         marker = L.marker(latlng, {icon: hospitalIconInstance});
                         hospitalLayer.addLayer(marker);
-                    } else if (feature.properties.amenity === "EMS (Emergency Medical Services)") {
+                    } else if (feature.properties.amenity === "Emergency Medical Services") {
                         marker = L.marker(latlng, {icon: emsIconInstance});
                         emsLayer.addLayer(marker);
-                    } else if (feature.properties.amenity === "OTP (Opioid Treatment Programs) Facility") {
+                    } else if (feature.properties.amenity === "Opioid Treatment Programs") {
                         marker = L.marker(latlng, {icon: otpIconInstance});
                         otpLayer.addLayer(marker);
-                    } else if (feature.properties.amenity === "Non-Opioid User Disorder Facility") {
+                    } else if (feature.properties.amenity === "Non-Opioid Rehab Facility") {
                         marker = L.marker(latlng, {icon: nonOpioidIconInstance});
                         nonOpioidLayer.addLayer(marker);
                     } else {
@@ -152,24 +171,23 @@
         // Function to generate the popup table content for overdoses
         function overdosePopupTable(feature) {
             return `
-                <table class="overdose-popup-table">
-                    <tr>
-                        <td><strong>County</strong></td>
-                        <td>${feature.properties.county}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Population</strong></td>
-                        <td>${feature.properties.population.toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Overdose Count</strong></td>
-                        <td>${feature.properties.count}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Per Capita Rate</strong></td>
-                        <td>${feature.properties.capita}</td>
-                    </tr>
-                </table>
+                <div>
+                    <h2 class="overdose-popup-title">${feature.properties.county}</h2>
+                    <table class="overdose-popup-table">
+                        <tr>
+                            <td><strong>Population</strong></td>
+                            <td>${feature.properties.population.toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Overdose Count</strong></td>
+                            <td>${feature.properties.count}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Per Capita Rate</strong></td>
+                            <td>${feature.properties.capita}</td>
+                        </tr>
+                    </table>
+                </div>
             `;
         }
 
@@ -182,7 +200,9 @@
                 style: fatalStyle,
                 // Function to bind a popup for each county's fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(overdosePopupTable(feature));
+                    layer.bindPopup(overdosePopupTable(feature), {
+                        className: 'overdose-popup-wrapper'
+                    });
                 }
             }).addTo(fatalOverdoseLayer2003); 
         });
@@ -196,7 +216,9 @@
                 style: fatalStyle,
                 // Function to bind a popup for each county's fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(overdosePopupTable(feature));
+                    layer.bindPopup(overdosePopupTable(feature), {
+                        className: 'overdose-popup-wrapper'
+                    });
                 }
             }).addTo(fatalOverdoseLayer2013); 
         });
@@ -239,7 +261,9 @@
                 style: nonFatalStyle,
                 // Function to bind a popup for each county's non-fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(overdosePopupTable(feature));
+                    layer.bindPopup(overdosePopupTable(feature), {
+                        className: 'overdose-popup-wrapper'
+                    });
                 }
             }).addTo(nonFatalOverdoseLayer2003); 
         });
@@ -253,7 +277,9 @@
                 style: nonFatalStyle,
                 // Function to bind a popup for each county's non-fatal overdose data
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(overdosePopupTable(feature));
+                    layer.bindPopup(overdosePopupTable(feature), {
+                        className: 'overdose-popup-wrapper'
+                    });
                 }
             }).addTo(nonFatalOverdoseLayer2013);
         });
@@ -285,10 +311,10 @@
 
         // Define base layers for overdose data, categorized by time periods and severity (fatal and non-fatal overdoses)
         const baseLayers = {
-            "Fatal Overdoses (2003-2007)": fatalOverdoseLayer2003,
-            "Fatal Overdoses (2013-2017)": fatalOverdoseLayer2013, 
-            "Non-Fatal Overdoses (2003-2007)": nonFatalOverdoseLayer2003,
-            "Non-Fatal Overdoses (2013-2017)": nonFatalOverdoseLayer2013
+            "<b>Fatal Overdoses <i style='color: #3d3b3b'>(2003-2007)": fatalOverdoseLayer2003,
+            "<b>Fatal Overdoses <i style='color: #3d3b3b'>(2013-2017)": fatalOverdoseLayer2013,
+            "<b>Non-Fatal Overdoses <i style='color: #3d3b3b'>(2003-2007)": nonFatalOverdoseLayer2003,
+            "<b>Non-Fatal Overdoses <i style='color: #3d3b3b'>(2013-2017)": nonFatalOverdoseLayer2013
         };
 
         // Define overlay layers for health services, represented with custom icons for each service
