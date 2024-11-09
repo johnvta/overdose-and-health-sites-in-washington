@@ -13,12 +13,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 	
-    <div id="wrapper">
-		<div id="header">
-            <h1>Overdose & Health Sites in Washington</h1>
-        </div>
-		<div id="map"></div>
-	</div>
+	<div id="header">
+        <h1>Overdose & Health Sites in Washington</h1>
+    </div>
+	<div id="map"></div>
+
 
 	<script>
         // Initialize the map centered on Washington State
@@ -39,6 +38,9 @@
         var otpLayer = L.layerGroup();
         var nonOpioidLayer = L.layerGroup();        
         var harmReductionLayer = L.layerGroup();
+
+        // Variable to hold the currently highlighted circle marker
+        let highlightedCircleMarker;        
         
         // Function to generate the popup table content for health sites
         function healthPopupTable(feature) {
@@ -53,12 +55,12 @@
                         <td>${feature.properties.name}</td>
                     </tr>
                     <tr>
-                        <td><strong>City</strong></td>
-                        <td>${feature.properties.city}</td>
-                    </tr>
-                    <tr>
                         <td><strong>Address</strong></td>
                         <td>${feature.properties.address}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>City</strong></td>
+                        <td>${feature.properties.city}</td>
                     </tr>
                 </table>
             `;
@@ -72,7 +74,9 @@
             L.geoJson(data, {
                 // Function to bind a popup to each feature displaying health site information
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(healthPopupTable(feature));
+                    layer.bindPopup(healthPopupTable(feature), {
+                        offset: L.point(0, -15)
+                    });
                 },
                 // Function to define how to display each feature (GeoJSON point) on the map
                 pointToLayer: function(feature, latlng) {
@@ -93,9 +97,24 @@
                         marker = L.marker(latlng, {icon: harmReductionIconInstance});
                         harmReductionLayer.addLayer(marker);
                     }
+                    // Add click event to draw a circle around the marker
+                    marker.on('click', function() {
+                        // Remove any existing circle
+                        if (highlightedCircleMarker) {
+                            map.removeLayer(highlightedCircleMarker);
+                        }
+                        // Create a new circle around the clicked marker
+                        highlightedCircleMarker = L.circleMarker(latlng, {
+                            fillColor: '#EFF9F2',
+                            fillOpacity: 0.9,
+                            color: 'white', 
+                            weight: 1, 
+                            radius: 20
+                        }).addTo(map);
+                    }); 
                     return marker;
                 }
-            })
+            });
         });               
 
         // Create custom icons for different health sites
@@ -286,13 +305,13 @@
 
         // Add title for base layers
         const baseTitle = document.createElement('div');
-        baseTitle.innerHTML = '<span style="font-size:16pt">Overdose Data</span>';
+        baseTitle.innerHTML = '<div class="control-title"><span style="font-size:16pt"><b>Overdose Data</b></span>';
         baseTitle.style.textAlign = 'center';
         document.querySelector('.leaflet-control-layers-base').insertAdjacentElement('beforebegin', baseTitle);
 
         // Add title for overlay layers
         const overlayTitle = document.createElement('div');
-        overlayTitle.innerHTML = '<span style="font-size:16pt">Health Sites</span>';
+        overlayTitle.innerHTML = '<div class="control-title"><span style="font-size:16pt"><b>Health Sites</b></span>';
         overlayTitle.style.textAlign = 'center';
         document.querySelector('.leaflet-control-layers-overlays').insertAdjacentElement('beforebegin', overlayTitle);
 
@@ -311,7 +330,7 @@
                 { color: '#eff3ff', label: 'Very Low: 1-9' }    
             ];
             // Add title for the legend
-            div.innerHTML += '<b>Fatal Drug Overdoses</b><br/>per County in Washington<br/><br>';
+            div.innerHTML += '<div class="legend-title"><b>Fatal Drug Overdoses</b><br>per County in Washington<br>';
             // Loop through each legend item and create a colored icon and label
             fatalLegendItems.forEach(function(item) {
                 div.innerHTML += `<i style="background: ${item.color}"></i><p>${item.label}</p>`;
@@ -331,7 +350,7 @@
                 { color: '#bdd7e7', label: 'Low: 47-166' },
                 { color: '#eff3ff', label: 'Very Low: 1-46' }    
             ];
-            div.innerHTML += '<b>Non-Fatal Drug Overdoses</b><br/>per County in Washington<br/><br>';
+            div.innerHTML += '<div class="legend-title"><b>Non-Fatal Drug Overdoses</b><br>per County in Washington<br>';
             // Loop through each legend item and create a colored icon and label
             nonFatalLegendItems.forEach(function(item) {
                 div.innerHTML += `<i style="background: ${item.color}"></i><p>${item.label}</p>`;
