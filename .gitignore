@@ -1,5 +1,5 @@
 # Environment variables
-.env
+backend/.env
 
 # Virtual environment
-venv/
+backend/venv/
