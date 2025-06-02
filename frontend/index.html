@@ -87,7 +87,7 @@
         // Load health sites data from GeoJSON file and display as a GeoJSON point layer
         // For each health site, create a marker on the map with a specific icon based on the 'amenity' type
         // Popups show information like the health site's type, name, and city
-        fetch('http://127.0.0.1:5000/health_sites')
+        fetch('https://washington-state-overdose-and-health.onrender.com/health_sites')
             .then(res => res.json()) // Parse the response as JSON
             .then(data => {
             // Create a GeoJSON layer for the health sites data
@@ -140,27 +140,27 @@
 
         // Create custom icons for different health sites
         var hospitalIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/hospital.png', iconSize: [24,24] }
+            options:{ iconUrl: 'https://johnvta.github.io/washington_state_overdose_and_health_services_finder/icons/hospital.png', iconSize: [24,24] }
         });
         var hospitalIconInstance = new hospitalIcon();
 
         var emsIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/ambulance.png', iconSize: [24,24] }
+            options:{ iconUrl: 'https://johnvta.github.io/washington_state_overdose_and_health_services_finder/icons/ambulance.png', iconSize: [24,24] }
         });   
         var emsIconInstance = new emsIcon();
 
         var otpIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/opioid.png', iconSize: [24,24] }
+            options:{ iconUrl: 'https://johnvta.github.io/washington_state_overdose_and_health_services_finder/icons/opioid.png', iconSize: [24,24] }
         });   
         var otpIconInstance = new otpIcon();  
         
         var nonOpioidIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/nonopioid.png', iconSize: [24,24] }
+            options:{ iconUrl: 'https://johnvta.github.io/washington_state_overdose_and_health_services_finder/icons/nonopioid.png', iconSize: [24,24] }
         });   
         var nonOpioidIconInstance = new nonOpioidIcon();
         
         var harmReductionIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/harmreduction.png', iconSize: [24,24] }
+            options:{ iconUrl: 'https://johnvta.github.io/washington_state_overdose_and_health_services_finder/icons/harmreduction.png', iconSize: [24,24] }
         });   
         var harmReductionIconInstance = new harmReductionIcon(); 
 
@@ -235,28 +235,28 @@
 
         // 
         loadOverdoseLayer({
-            url: 'http://127.0.0.1:5000/county_overdose',
+            url: 'https://washington-state-overdose-and-health.onrender.com/county_overdose',
             timePeriod: '2003-2007',
             type: 'fatal',
             layerGroup: fatalOverdoseLayer2003
         });
 
         loadOverdoseLayer({
-            url: 'http://127.0.0.1:5000/county_overdose',
+            url: 'https://washington-state-overdose-and-health.onrender.com/county_overdose',
             timePeriod: '2013-2017',
             type: 'fatal',
             layerGroup: fatalOverdoseLayer2013
         });
 
         loadOverdoseLayer({
-            url: 'http://127.0.0.1:5000/county_overdose',
+            url: 'https://washington-state-overdose-and-health.onrender.com/county_overdose',
             timePeriod: '2003-2007',
             type: 'nonfatal',
             layerGroup: nonFatalOverdoseLayer2003
         });
 
         loadOverdoseLayer({
-            url: 'http://127.0.0.1:5000/county_overdose',
+            url: 'https://washington-state-overdose-and-health.onrender.com/county_overdose',
             timePeriod: '2013-2017',
             type: 'nonfatal',
             layerGroup: nonFatalOverdoseLayer2013
