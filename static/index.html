@@ -5,7 +5,7 @@
 	<title>Overdose Web Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <!-- Leaflet and jQuery scripts -->
@@ -140,27 +140,27 @@
 
         // Create custom icons for different health sites
         var hospitalIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/hospital.png', iconSize: [24,24] }
+            options:{ iconUrl: '/static/icons/hospital.png', iconSize: [24,24] }
         });
         var hospitalIconInstance = new hospitalIcon();
 
         var emsIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/ambulance.png', iconSize: [24,24] }
+            options:{ iconUrl: '/static/icons/ambulance.png', iconSize: [24,24] }
         });   
         var emsIconInstance = new emsIcon();
 
         var otpIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/opioid.png', iconSize: [24,24] }
+            options:{ iconUrl: '/static/icons/opioid.png', iconSize: [24,24] }
         });   
         var otpIconInstance = new otpIcon();  
         
         var nonOpioidIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/nonopioid.png', iconSize: [24,24] }
+            options:{ iconUrl: '/static/icons/nonopioid.png', iconSize: [24,24] }
         });   
         var nonOpioidIconInstance = new nonOpioidIcon();
         
         var harmReductionIcon = L.Icon.extend({ 
-            options:{ iconUrl: 'icons/harmreduction.png', iconSize: [24,24] }
+            options:{ iconUrl: '/static/icons/harmreduction.png', iconSize: [24,24] }
         });   
         var harmReductionIconInstance = new harmReductionIcon(); 
 
