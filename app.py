@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory, render_template, request
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import psycopg2, json, os
 from dotenv import load_dotenv
