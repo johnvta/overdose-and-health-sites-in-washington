@@ -71,7 +71,7 @@ def health_sites():
     return jsonify(geojson)
 
 # Define a route to get county overdose count
-@app.route('county_overdose', methods=['GET'])
+@app.route('/county_overdose', methods=['GET'])
 def county_overdose():
     conn = get_db_connection()
     cur = conn.cursor()
